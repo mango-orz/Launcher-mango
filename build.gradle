@@ -1,0 +1,18 @@
+buildscript {
+    apply from: 'versions.gradle'
+
+    addRepos(repositories)
+    dependencies {
+        classpath deps.classpath_gradle
+        classpath deps.classpath_protobuf
+        // classpath deps.classpath_buggly
+    }
+}
+
+allprojects {
+    addRepos(repositories)
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

@@ -1,0 +1,97 @@
+ext {
+    // Sdk and tools
+    compileSdkVersion = 28
+    buildToolsVersion = '28.0.2'
+    minSdkVersion = 21
+    targetSdkVersion = 21
+    // Version
+    versionCode = '1'
+    versionName = '1.0.0'
+}
+
+// 高频修改的版本号
+def versions = [:]
+versions.gradle = "3.1.4"
+versions.buggly = "2.1.0"
+versions.protobuf = "0.8.0"
+// Sdk and tools
+versions.compileSdkVersion = 28
+versions.buildToolsVersion = '27.0.3'
+versions.minSdkVersion = 16
+versions.targetSdkVersion = 16
+// Version
+versions.code = '1'
+versions.name = '1.0'
+
+versions.support = "27.0.2"
+versions.support_multidex = "1.0.3"
+versions.support_annotations = "22.1.1"
+versions.guava = "26.0-android"
+versions.espresso = "3.0.2"
+versions.espresso_deps = "2.1"
+versions.junit4 = "4.12"
+versions.test_runner = "1.0.2"
+versions.constraint_layout = "1.1.3"
+
+def deps = [:]
+deps.classpath_gradle = "com.android.tools.build:gradle:$versions.gradle"
+deps.classpath_buggly = "com.tencent.bugly:symtabfileuploader:$versions.buggly"
+deps.classpath_protobuf = "com.google.protobuf:protobuf-gradle-plugin:$versions.protobuf"
+
+def support = [:]
+support.cardview = "com.android.support:cardview-v7:$versions.support"
+support.app_compat = "com.android.support:appcompat-v7:$versions.support"
+support.multidex = "com.android.support:multidex:$versions.support_multidex"
+support.annotations = "com.android.support:support-annotations:$versions.support"
+support.recyclerview = "com.android.support:recyclerview-v7:$versions.support"
+support.palette = "com.android.support:palette-v7:$versions.support"
+support.dynamic_animation = "com.android.support:support-dynamic-animation:$versions.support"
+support.design = "com.android.support:design:$versions.support"
+support.v4 = "com.android.support:support-v4:$versions.support"
+support.constraint_layout = "com.android.support.constraint:constraint-layout:$versions.constraint_layout"
+support.annotations = "com.android.support:support-annotations:$versions.support"
+
+deps.support = support
+
+def google = [:]
+google.guava = "com.google.guava:guava:$versions.guava"
+google.protobuf_javanano = "com.google.protobuf.nano:protobuf-javanano:3.0.0"
+google.dexmaker = "com.google.dexmaker:dexmaker:1.2"
+google.dexmaker_mockito = "com.google.dexmaker:dexmaker-mockito:1.2"
+
+deps.google = google
+
+def test = [:]
+test.junit = "junit:junit:$versions.junit4"
+test.runner = "com.android.support.test:runner:$versions.test_runner"
+test.uiautomator = "com.android.support.test.uiautomator:uiautomator-v18:2.1.3"
+test.mockito = "org.mockito:mockito-core:2.8.47"
+test.espresso = "com.android.support.test.espresso:espresso-core:$versions.espresso"
+
+deps.test = test
+
+def common = [:]
+common.buggly = "com.tencent.bugly:crashreport:$versions.buggly"
+common.fastjson = "com.alibaba:fastjson:$versions.fastjson"
+common.liulishuo_downloader = "com.liulishuo.filedownloader:library:1.6.9"
+
+def rx = [:]
+rx.android = "io.reactivex.rxjava2:rxandroid:$versions.rxandroid"
+rx.java = "io.reactivex.rxjava2:rxjava:$versions.rxjava"
+//rx.streams = "org.reactivestreams:reactive-streams:$versions.rxstreams"
+//rx.permissions = "com.tbruyelle.rxpermissions2:rxpermissions:$versions.rxpermissions"
+deps.rx = rx
+
+ext.deps = [:]
+ext.deps = deps
+
+static def addRepos(RepositoryHandler handler) {
+    handler.maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+    handler.maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
+    handler.maven { url 'https://jitpack.io' }
+    handler.jcenter()
+    handler.mavenCentral()
+    handler.google()
+}
+
+ext.addRepos = this.&addRepos

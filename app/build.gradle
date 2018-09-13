@@ -1,0 +1,91 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.protobuf'
+
+android {
+
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.launcher.mango"
+        minSdkVersion rootProject.minSdkVersion
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode Integer.parseInt(rootProject.versionCode)
+        versionName rootProject.versionName
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation deps.test.junit
+    androidTestImplementation deps.test.uiautomator
+    androidTestImplementation deps.test.mockito
+    androidTestImplementation deps.test.runner
+    androidTestImplementation deps.test.espresso
+    androidTestImplementation deps.support.annotations
+    androidTestImplementation deps.google.dexmaker
+    androidTestImplementation deps.google.dexmaker_mockito
+
+    implementation deps.support.app_compat
+    implementation deps.support.v4
+    implementation deps.support.palette
+    implementation deps.support.recyclerview
+    implementation deps.support.constraint_layout
+    implementation deps.support.dynamic_animation
+
+    implementation deps.google.protobuf_javanano
+    implementation deps.google.guava
+}
+
+//指定原始.proto文件的位置
+android {
+    sourceSets {
+        main {
+            java {
+                srcDirs 'src/main/java'
+            }
+            proto {
+                srcDirs 'src/main/proto'
+            }
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.0.0'
+        generatedFilesBaseDir = "$projectDir/src/generated"
+
+        generateProtoTasks {
+            all().each { task ->
+                task.builtins {
+                    remove java
+                    javanano {
+                        option "java_package=launcher_log_extension.proto|com.launcher.mango.userevent.nano"
+                        option "java_package=launcher_log.proto|com.launcher.mango.userevent.nano"
+                        option "java_package=launcher_dump.proto|com.launcher.mango.model.nano"
+                        option "enum_style=java"
+                    }
+                }
+            }
+        }
+    }
+}
