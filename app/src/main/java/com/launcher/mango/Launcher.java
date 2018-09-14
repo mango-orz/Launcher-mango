@@ -1936,6 +1936,7 @@ public class Launcher extends BaseActivity
             (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         ComponentName globalSearchActivity = searchManager.getGlobalSearchActivity();
         if (globalSearchActivity == null) {
+            // TODO add local search CName
             Log.w(TAG, "No global search activity found.");
             return;
         }

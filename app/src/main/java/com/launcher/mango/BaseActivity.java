@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.view.View.AccessibilityDelegate;
 
 import com.launcher.mango.logging.UserEventDispatcher;
@@ -68,5 +69,12 @@ public abstract class BaseActivity extends Activity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * for override
+     */
+    public void onPermissionRefuse(@NonNull String permissions) {
+
     }
 }

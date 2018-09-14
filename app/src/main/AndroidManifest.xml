@@ -86,7 +86,7 @@
         attributes and intent filters the same
         -->
         <activity
-            android:name="com.launcher.mango.Launcher"
+            android:name="com.launcher.mango.Launcher3"
             android:clearTaskOnLaunch="true"
             android:configChanges="keyboard|keyboardHidden|navigation"
             android:enabled="true"

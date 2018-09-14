@@ -19,7 +19,7 @@ package com.launcher.mango;
 import android.os.Handler;
 import android.os.SystemClock;
 
-public class Alarm implements Runnable{
+public class Alarm implements Runnable {
     // if we reach this time and the alarm hasn't been cancelled, call the listener
     private long mAlarmTriggerTime;
 
@@ -63,6 +63,7 @@ public class Alarm implements Runnable{
     }
 
     // this is called when our timer runs out
+    @Override
     public void run() {
         mWaitingForCallback = false;
         if (mAlarmPending) {
