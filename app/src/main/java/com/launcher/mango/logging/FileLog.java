@@ -6,8 +6,8 @@ import android.os.Message;
 import android.util.Log;
 import android.util.Pair;
 
-import com.android.launcher3.Utilities;
-import com.android.launcher3.config.FeatureFlags;
+import com.launcher.mango.Utilities;
+import com.launcher.mango.config.FeatureFlags;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -57,6 +57,7 @@ import android.os.SystemClock;
 import android.os.Trace;
 import android.os.UserHandle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -119,7 +120,6 @@ import com.launcher.mango.userevent.nano.LauncherLogProto.Action;
 import com.launcher.mango.userevent.nano.LauncherLogProto.ContainerType;
 import com.launcher.mango.userevent.nano.LauncherLogProto.ControlType;
 import com.launcher.mango.util.ActivityResultInfo;
-import com.launcher.mango.util.RunnableWithId;
 import com.launcher.mango.util.ComponentKey;
 import com.launcher.mango.util.ComponentKeyMapper;
 import com.launcher.mango.util.ItemInfoMatcher;
@@ -127,6 +127,7 @@ import com.launcher.mango.util.MultiHashMap;
 import com.launcher.mango.util.PackageManagerHelper;
 import com.launcher.mango.util.PackageUserKey;
 import com.launcher.mango.util.PendingRequestArgs;
+import com.launcher.mango.util.RunnableWithId;
 import com.launcher.mango.util.SystemUiController;
 import com.launcher.mango.util.TestingUtils;
 import com.launcher.mango.util.Themes;
@@ -138,7 +139,6 @@ import com.launcher.mango.widget.WidgetAddFlowHandler;
 import com.launcher.mango.widget.WidgetHostViewLoader;
 import com.launcher.mango.widget.WidgetsContainerView;
 
-
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -149,8 +149,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
-import com.launcher.mango.util.RunnableWithId.RUNNABLE_ID_BIND_APPS;
-import com.launcher.mango.util.RunnableWithId.RUNNABLE_ID_BIND_WIDGETS;
+import static com.launcher.mango.util.RunnableWithId.RUNNABLE_ID_BIND_APPS;
+import static com.launcher.mango.util.RunnableWithId.RUNNABLE_ID_BIND_WIDGETS;
 
 /**
  * Default launcher application.
@@ -317,6 +317,7 @@ public class Launcher extends BaseActivity
     private Runnable mExitSpringLoadedModeRunnable;
 
     @Thunk final Runnable mBuildLayersRunnable = new Runnable() {
+        @Override
         public void run() {
             if (mWorkspace != null) {
                 mWorkspace.buildPageHardwareLayers();
@@ -535,6 +536,7 @@ public class Launcher extends BaseActivity
 
     private LauncherCallbacks mLauncherCallbacks;
 
+    @Override
     public void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         if (mLauncherCallbacks != null) {
@@ -550,6 +552,7 @@ public class Launcher extends BaseActivity
     /**
      * Call this after onCreate to set or clear overlay.
      */
+    @Override
     public void setLauncherOverlay(LauncherOverlay overlay) {
         if (overlay != null) {
             overlay.setOverlayCallbacks(new LauncherOverlayCallbacksImpl());
@@ -557,6 +560,7 @@ public class Launcher extends BaseActivity
         mWorkspace.setLauncherOverlay(overlay);
     }
 
+    @Override
     public boolean setLauncherCallbacks(LauncherCallbacks callbacks) {
         mLauncherCallbacks = callbacks;
         return true;
@@ -807,8 +811,10 @@ public class Launcher extends BaseActivity
     }
 
     /** @Override for MNC */
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            int[] grantResults) {
+                                           int[] grantResults) {
         PendingRequestArgs pendingArgs = mPendingRequestArgs;
         if (requestCode == REQUEST_PERMISSION_CALL_PHONE && pendingArgs != null
                 && pendingArgs.getRequestCode() == REQUEST_PERMISSION_CALL_PHONE) {
@@ -1123,6 +1129,7 @@ public class Launcher extends BaseActivity
 
     class LauncherOverlayCallbacksImpl implements LauncherOverlayCallbacks {
 
+        @Override
         public void onScrollChanged(float progress) {
             if (mWorkspace != null) {
                 mWorkspace.onOverlayScrollChanged(progress);
@@ -1606,6 +1613,7 @@ public class Launcher extends BaseActivity
                 // apps is nice and speedy.
                 observer.addOnDrawListener(new ViewTreeObserver.OnDrawListener() {
                     private boolean mStarted = false;
+                    @Override
                     public void onDraw() {
                         if (mStarted) return;
                         mStarted = true;
@@ -1617,6 +1625,7 @@ public class Launcher extends BaseActivity
                         mWorkspace.postDelayed(mBuildLayersRunnable, 500);
                         final ViewTreeObserver.OnDrawListener listener = this;
                         mWorkspace.post(new Runnable() {
+                            @Override
                             public void run() {
                                 if (mWorkspace != null &&
                                         mWorkspace.getViewTreeObserver() != null) {
@@ -1672,6 +1681,7 @@ public class Launcher extends BaseActivity
         return mModelWriter;
     }
 
+    @Override
     public SharedPreferences getSharedPrefs() {
         return mSharedPrefs;
     }
@@ -1865,6 +1875,7 @@ public class Launcher extends BaseActivity
         }
     }
 
+    @Override
     public LauncherAccessibilityDelegate getAccessibilityDelegate() {
         return mAccessibilityDelegate;
     }
@@ -2174,6 +2185,7 @@ public class Launcher extends BaseActivity
             // Deleting an app widget ID is a void call but writes to disk before returning
             // to the caller...
             new AsyncTask<Void, Void, Void>() {
+                @Override
                 public Void doInBackground(Void ... args) {
                     appWidgetHost.deleteAppWidgetId(widgetInfo.appWidgetId);
                     return null;
@@ -2239,6 +2251,8 @@ public class Launcher extends BaseActivity
      *
      * @param v The view representing the clicked shortcut.
      */
+    @Override
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void onClick(View v) {
         // Make sure that rogue clicks don't get through while allapps is launching, or after the
         // view has detached (it's possible for this to happen if the view is removed mid touch).
@@ -2291,6 +2305,7 @@ public class Launcher extends BaseActivity
         }
     }
 
+    @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouch(View v, MotionEvent event) {
         return false;
@@ -2299,6 +2314,7 @@ public class Launcher extends BaseActivity
     /**
      * Event handler for the app widget view which has not fully restored.
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void onClickPendingWidget(final PendingAppWidgetHostView v) {
         if (mIsSafeModeEnabled) {
             Toast.makeText(this, R.string.safemode_widget_error, Toast.LENGTH_SHORT).show();
@@ -2348,8 +2364,9 @@ public class Launcher extends BaseActivity
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void onClickPendingAppItem(final View v, final String packageName,
-            boolean downloadStarted) {
+                                       boolean downloadStarted) {
         if (downloadStarted) {
             // If the download has started, simply direct to the market app.
             startMarketIntentForPackage(v, packageName);
@@ -2359,6 +2376,7 @@ public class Launcher extends BaseActivity
             .setTitle(R.string.abandoned_promises_title)
             .setMessage(R.string.abandoned_promise_explanation)
             .setPositiveButton(R.string.abandoned_search, new DialogInterface.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     startMarketIntentForPackage(v, packageName);
@@ -2366,6 +2384,7 @@ public class Launcher extends BaseActivity
             })
             .setNeutralButton(R.string.abandoned_clean_this,
                 new DialogInterface.OnClickListener() {
+                    @Override
                     public void onClick(DialogInterface dialog, int id) {
                         final UserHandle user = Process.myUserHandle();
                         mWorkspace.removeAbandonedPromise(packageName, user);
@@ -2374,6 +2393,7 @@ public class Launcher extends BaseActivity
             .create().show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void startMarketIntentForPackage(View v, String packageName) {
         ItemInfo item = (ItemInfo) v.getTag();
         Intent intent = PackageManagerHelper.getMarketIntent(packageName);
@@ -2389,6 +2409,8 @@ public class Launcher extends BaseActivity
      *
      * @param v The view that was clicked. Must be a tagged with a {@link ShortcutInfo}.
      */
+    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(api = Build.VERSION_CODES.M)
     protected void onClickAppShortcut(final View v) {
         if (LOGD) Log.d(TAG, "onClickAppShortcut");
         Object tag = v.getTag();
@@ -2439,6 +2461,7 @@ public class Launcher extends BaseActivity
         startAppShortcutOrInfoActivity(v);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void startAppShortcutOrInfoActivity(View v) {
         ItemInfo item = (ItemInfo) v.getTag();
         Intent intent;
@@ -2466,7 +2489,9 @@ public class Launcher extends BaseActivity
      * @param v The view that was clicked. Must be an instance of {@link FolderIcon}.
      */
     protected void onClickFolderIcon(View v) {
-        if (LOGD) Log.d(TAG, "onClickFolder");
+        if (LOGD) {
+            Log.d(TAG, "onClickFolder");
+        }
         if (!(v instanceof FolderIcon)){
             throw new IllegalArgumentException("Input must be a FolderIcon");
         }
@@ -2483,7 +2508,9 @@ public class Launcher extends BaseActivity
      * on the home screen.
      */
     public void onClickAddWidgetButton(View view) {
-        if (LOGD) Log.d(TAG, "onClickAddWidgetButton");
+        if (LOGD) {
+            Log.d(TAG, "onClickAddWidgetButton");
+        }
         if (mIsSafeModeEnabled) {
             Toast.makeText(this, R.string.safemode_widget_error, Toast.LENGTH_SHORT).show();
         } else {
@@ -2529,7 +2556,9 @@ public class Launcher extends BaseActivity
      * on the home screen.
      */
     public void onClickSettingsButton(View v) {
-        if (LOGD) Log.d(TAG, "onClickSettingsButton");
+        if (LOGD) {
+            Log.d(TAG, "onClickSettingsButton");
+        }
         Intent intent = new Intent(Intent.ACTION_APPLICATION_PREFERENCES)
                 .setPackage(getPackageName());
         intent.setSourceBounds(getViewBounds(v));
@@ -2588,6 +2617,7 @@ public class Launcher extends BaseActivity
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     private void startShortcutIntentSafely(Intent intent, Bundle optsBundle, ItemInfo info) {
         try {
             StrictMode.VmPolicy oldPolicy = StrictMode.getVmPolicy();
@@ -2663,6 +2693,7 @@ public class Launcher extends BaseActivity
         return new Rect(pos[0], pos[1], pos[0] + v.getWidth(), pos[1] + v.getHeight());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public boolean startActivitySafely(View v, Intent intent, ItemInfo item) {
         if (mIsSafeModeEnabled && !Utilities.isSystemApp(this, intent)) {
             Toast.makeText(this, R.string.safemode_shortcut_error, Toast.LENGTH_SHORT).show();
@@ -3172,6 +3203,7 @@ public class Launcher extends BaseActivity
      *
      * Implementation of the method from LauncherModel.Callbacks.
      */
+    @Override
     public void startBinding() {
         if (LauncherAppState.PROFILE_STARTUP) {
             Trace.beginSection("Starting page bind");
@@ -3236,6 +3268,7 @@ public class Launcher extends BaseActivity
                               final ArrayList<ItemInfo> addNotAnimated,
                               final ArrayList<ItemInfo> addAnimated) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 bindAppsAdded(newScreens, addNotAnimated, addAnimated);
             }
@@ -3270,6 +3303,7 @@ public class Launcher extends BaseActivity
     @Override
     public void bindItems(final List<ItemInfo> items, final boolean forceAnimateIcons) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 bindItems(items, forceAnimateIcons);
             }
@@ -3365,6 +3399,7 @@ public class Launcher extends BaseActivity
                     // We post the animation slightly delayed to prevent slowdowns
                     // when we are loading right after we return to launcher.
                     mWorkspace.postDelayed(new Runnable() {
+                        @Override
                         public void run() {
                             if (mWorkspace != null) {
                                 mWorkspace.snapToPage(newScreenIndex);
@@ -3536,6 +3571,7 @@ public class Launcher extends BaseActivity
         return info;
     }
 
+    @Override
     public void onPageBoundSynchronously(int page) {
         mSynchronouslyBoundPages.add(page);
     }
@@ -3558,6 +3594,7 @@ public class Launcher extends BaseActivity
     @Override
     public void finishFirstPageBind(final ViewOnDrawExecutor executor) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 finishFirstPageBind(executor);
             }
@@ -3586,8 +3623,10 @@ public class Launcher extends BaseActivity
      *
      * Implementation of the method from LauncherModel.Callbacks.
      */
+    @Override
     public void finishBindingItems() {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 finishBindingItems();
             }
@@ -3650,8 +3689,10 @@ public class Launcher extends BaseActivity
      *
      * Implementation of the method from LauncherModel.Callbacks.
      */
+    @Override
     public void bindAllApplications(final ArrayList<AppInfo> apps) {
         Runnable r = new RunnableWithId(RUNNABLE_ID_BIND_APPS) {
+            @Override
             public void run() {
                 bindAllApplications(apps);
             }
@@ -3697,8 +3738,10 @@ public class Launcher extends BaseActivity
      *
      * Implementation of the method from LauncherModel.Callbacks.
      */
+    @Override
     public void bindAppsAddedOrUpdated(final ArrayList<AppInfo> apps) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 bindAppsAddedOrUpdated(apps);
             }
@@ -3715,6 +3758,7 @@ public class Launcher extends BaseActivity
     @Override
     public void bindPromiseAppProgressUpdated(final PromiseAppInfo app) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 bindPromiseAppProgressUpdated(app);
             }
@@ -3731,6 +3775,7 @@ public class Launcher extends BaseActivity
     @Override
     public void bindWidgetsRestored(final ArrayList<LauncherAppWidgetInfo> widgets) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 bindWidgetsRestored(widgets);
             }
@@ -3750,6 +3795,7 @@ public class Launcher extends BaseActivity
     @Override
     public void bindShortcutsChanged(final ArrayList<ShortcutInfo> updated, final UserHandle user) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 bindShortcutsChanged(updated, user);
             }
@@ -3771,6 +3817,7 @@ public class Launcher extends BaseActivity
     @Override
     public void bindRestoreItemsChange(final HashSet<ItemInfo> updates) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 bindRestoreItemsChange(updates);
             }
@@ -3792,6 +3839,7 @@ public class Launcher extends BaseActivity
     @Override
     public void bindWorkspaceComponentsRemoved(final ItemInfoMatcher matcher) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 bindWorkspaceComponentsRemoved(matcher);
             }
@@ -3806,6 +3854,7 @@ public class Launcher extends BaseActivity
     @Override
     public void bindAppInfosRemoved(final ArrayList<AppInfo> appInfos) {
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 bindAppInfosRemoved(appInfos);
             }
@@ -3879,6 +3928,7 @@ public class Launcher extends BaseActivity
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
             } else {
                 mHandler.postDelayed(new Runnable() {
+                    @Override
                     public void run() {
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
                     }

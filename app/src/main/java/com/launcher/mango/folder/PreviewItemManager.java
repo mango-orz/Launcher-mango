@@ -34,7 +34,7 @@ import com.launcher.mango.config.FeatureFlags;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.launcher.mango.folder.FolderIcon.DROP_IN_ANIMATION_DURATION;
+import static com.launcher.mango.folder.FolderIcon.DROP_IN_ANIMATION_DURATION;
 
 /**
  * Manages the drawing and animations of {@link PreviewItemDrawingParams} for a {@link FolderIcon}.
@@ -166,7 +166,8 @@ public class PreviewItemManager {
     }
 
     private void drawPreviewItem(Canvas canvas, PreviewItemDrawingParams params) {
-        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+//        canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        canvas.save();
         canvas.translate(params.transX, params.transY);
         canvas.scale(params.scale, params.scale);
         Drawable d = params.drawable;

@@ -71,7 +71,7 @@ import com.launcher.mango.widget.PendingAddShortcutInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.launcher.mango.folder.PreviewItemManager.INITIAL_ITEM_ANIMATION_DURATION;
+import static com.launcher.mango.folder.PreviewItemManager.INITIAL_ITEM_ANIMATION_DURATION;
 
 /**
  * An icon that can appear on in the workspace representing an {@link Folder}.
@@ -249,6 +249,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     }
 
     OnAlarmListener mOnOpenListener = new OnAlarmListener() {
+        @Override
         public void onAlarm(Alarm alarm) {
             mFolder.beginExternalDrag();
             mFolder.animateOpen();
@@ -360,6 +361,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
             if (!itemAdded) mPreviewItemManager.hidePreviewItem(index, true);
             final int finalIndex = index;
             postDelayed(new Runnable() {
+                @Override
                 public void run() {
                     mPreviewItemManager.hidePreviewItem(finalIndex, false);
                     mFolder.showItem(item);
@@ -470,10 +472,9 @@ public class FolderIcon extends FrameLayout implements FolderListener {
         final int saveCount;
 
         if (canvas.isHardwareAccelerated()) {
-            saveCount = canvas.saveLayer(0, 0, getWidth(), getHeight(), null,
-                    Canvas.HAS_ALPHA_LAYER_SAVE_FLAG | Canvas.CLIP_TO_LAYER_SAVE_FLAG);
+            saveCount = canvas.saveLayer(0, 0, getWidth(), getHeight(), null);
         } else {
-            saveCount = canvas.save(Canvas.CLIP_SAVE_FLAG);
+            saveCount = canvas.save();
             if (mPreviewLayoutRule.clipToBackground()) {
                 canvas.clipPath(mBackground.getClipPath(), Region.Op.INTERSECT);
             }

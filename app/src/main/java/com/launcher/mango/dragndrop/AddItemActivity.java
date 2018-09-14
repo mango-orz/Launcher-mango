@@ -55,10 +55,10 @@ import com.launcher.mango.widget.PendingAddWidgetInfo;
 import com.launcher.mango.widget.WidgetHostViewLoader;
 import com.launcher.mango.widget.WidgetImageView;
 
-import com.launcher.mango.logging.LoggerUtils.newCommandAction;
-import com.launcher.mango.logging.LoggerUtils.newContainerTarget;
-import com.launcher.mango.logging.LoggerUtils.newItemTarget;
-import com.launcher.mango.logging.LoggerUtils.newLauncherEvent;
+import static com.launcher.mango.logging.LoggerUtils.newCommandAction;
+import static com.launcher.mango.logging.LoggerUtils.newContainerTarget;
+import static com.launcher.mango.logging.LoggerUtils.newItemTarget;
+import static com.launcher.mango.logging.LoggerUtils.newLauncherEvent;
 
 @TargetApi(Build.VERSION_CODES.O)
 public class AddItemActivity extends BaseActivity implements OnLongClickListener, OnTouchListener {

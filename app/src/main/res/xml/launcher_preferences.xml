@@ -16,7 +16,7 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <com.android.launcher3.views.ButtonPreference
+    <com.launcher.mango.views.ButtonPreference
         android:key="pref_icon_badging"
         android:title="@string/icon_badging_title"
         android:persistent="false"
@@ -27,7 +27,7 @@
                 android:name=":settings:fragment_args_key"
                 android:value="notification_badging" />
         </intent>
-    </com.android.launcher3.views.ButtonPreference>
+    </com.launcher.mango.views.ButtonPreference>
 
     <SwitchPreference
         android:key="pref_add_icon_to_home"

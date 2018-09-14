@@ -31,6 +31,18 @@ android {
         abortOnError false
         checkReleaseBuilds false
     }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs 'src/main/java'
+            }
+            proto {
+                srcDirs 'src/main/proto'
+            }
+        }
+    }
+
 }
 
 dependencies {
@@ -51,28 +63,13 @@ dependencies {
     implementation deps.support.constraint_layout
     implementation deps.support.dynamic_animation
 
-    implementation deps.google.protobuf_javanano
+    implementation "com.google.protobuf.nano:protobuf-javanano:3.2.0rc2"
     implementation deps.google.guava
-}
-
-//指定原始.proto文件的位置
-android {
-    sourceSets {
-        main {
-            java {
-                srcDirs 'src/main/java'
-            }
-            proto {
-                srcDirs 'src/main/proto'
-            }
-        }
-    }
 }
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.0.0'
-        generatedFilesBaseDir = "$projectDir/src/generated"
+        artifact = 'com.google.protobuf:protoc:3.0.0-alpha-3'
 
         generateProtoTasks {
             all().each { task ->

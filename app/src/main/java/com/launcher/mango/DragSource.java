@@ -19,11 +19,12 @@ package com.launcher.mango;
 import android.view.View;
 
 import com.launcher.mango.DropTarget.DragObject;
+import com.launcher.mango.logging.UserEventDispatcher;
 
 /**
  * Interface defining an object that can originate a drag.
  */
-public interface DragSource {
+public interface DragSource extends UserEventDispatcher.LogContainerProvider {
 
     /**
      * @return whether items dragged from this source supports 'App Info'

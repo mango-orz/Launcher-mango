@@ -145,10 +145,12 @@ public class LauncherExtension extends Launcher {
 
             // Custom content is completely shown. {@code fromResume} indicates whether this was caused
             // by a onResume or by scrolling otherwise.
+            @Override
             public void onShow(boolean fromResume) {
             }
 
             // Custom content is completely hidden
+            @Override
             public void onHide() {
             }
 

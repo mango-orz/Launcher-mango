@@ -70,7 +70,6 @@ import com.launcher.mango.dragndrop.DragLayer;
 import com.launcher.mango.dragndrop.DragOptions;
 import com.launcher.mango.dragndrop.DragView;
 import com.launcher.mango.dragndrop.SpringLoadedDragController;
-import com.launcher.mango.enums.ContainerType;
 import com.launcher.mango.folder.Folder;
 import com.launcher.mango.folder.FolderIcon;
 import com.launcher.mango.folder.PreviewBackground;
@@ -78,6 +77,7 @@ import com.launcher.mango.graphics.DragPreviewProvider;
 import com.launcher.mango.graphics.PreloadIconDrawable;
 import com.launcher.mango.popup.PopupContainerWithArrow;
 import com.launcher.mango.shortcuts.ShortcutDragPreviewProvider;
+import com.launcher.mango.userevent.nano.LauncherLogProto;
 import com.launcher.mango.util.ItemInfoMatcher;
 import com.launcher.mango.util.LongArrayMap;
 import com.launcher.mango.util.PackageUserKey;
@@ -85,6 +85,7 @@ import com.launcher.mango.util.Thunk;
 import com.launcher.mango.util.VerticalFlingDetector;
 import com.launcher.mango.util.WallpaperOffsetInterpolator;
 import com.launcher.mango.widget.PendingAddShortcutInfo;
+import com.launcher.mango.userevent.nano.LauncherLogProto.*;
 import com.launcher.mango.widget.PendingAddWidgetInfo;
 
 import java.util.ArrayList;
@@ -194,11 +195,11 @@ public class Workspace extends PagedView
         /**
          *
          */
-        NORMAL          (false, false, ContainerType.WORKSPACE),
-        NORMAL_HIDDEN   (false, false, ContainerType.ALLAPPS),
-        SPRING_LOADED   (false, true, ContainerType.WORKSPACE),
-        OVERVIEW        (true, true, ContainerType.OVERVIEW),
-        OVERVIEW_HIDDEN (true, false, ContainerType.WIDGETS);
+        NORMAL          (false, false, LauncherLogProto.ContainerType.WORKSPACE),
+        NORMAL_HIDDEN   (false, false, LauncherLogProto.ContainerType.ALLAPPS),
+        SPRING_LOADED   (false, true, LauncherLogProto.ContainerType.WORKSPACE),
+        OVERVIEW        (true, true, LauncherLogProto.ContainerType.OVERVIEW),
+        OVERVIEW_HIDDEN (true, false, LauncherLogProto.ContainerType.WIDGETS);
 
         public final boolean shouldUpdateWidget;
         public final boolean hasMultipleVisiblePages;
@@ -1160,6 +1161,7 @@ public class Workspace extends PagedView
                 || (mTransitionProgress > FINISHED_SWITCHING_STATE_TRANSITION_PROGRESS);
     }
 
+    @Override
     protected void onWindowVisibilityChanged (int visibility) {
         mLauncher.onWindowVisibilityChanged(visibility);
     }
@@ -1281,11 +1283,13 @@ public class Workspace extends PagedView
         }
     }
 
+    @Override
     protected void onPageBeginTransition() {
         super.onPageBeginTransition();
         updateChildrenLayersEnabled(false);
     }
 
+    @Override
     protected void onPageEndTransition() {
         super.onPageEndTransition();
         updateChildrenLayersEnabled(false);
@@ -1313,11 +1317,13 @@ public class Workspace extends PagedView
         }
     }
 
+    @Override
     protected void onScrollInteractionBegin() {
         super.onScrollInteractionEnd();
         mScrollInteractionBegan = true;
     }
 
+    @Override
     protected void onScrollInteractionEnd() {
         super.onScrollInteractionEnd();
         mScrollInteractionBegan = false;
@@ -1724,6 +1730,7 @@ public class Workspace extends PagedView
         }
     }
 
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         IBinder windowToken = getWindowToken();
@@ -1732,6 +1739,7 @@ public class Workspace extends PagedView
         mDragController.setWindowToken(windowToken);
     }
 
+    @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         mWallpaperOffset.setWindowToken(null);
@@ -1890,12 +1898,14 @@ public class Workspace extends PagedView
         range[1] = Math.max(0, end);
     }
 
+    @Override
     public void onStartReordering() {
         super.onStartReordering();
         // Reordering handles its own animations, disable the automatic ones.
         disableLayoutTransitions();
     }
 
+    @Override
     public void onEndReordering() {
         super.onEndReordering();
 
@@ -2208,6 +2218,7 @@ public class Workspace extends PagedView
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean acceptDrop(DragObject d) {
         // If it's an external drop (e.g. from All Apps), check if it should be accepted
         CellLayout dropTargetLayout = mDropToLayout;
@@ -2422,6 +2433,7 @@ public class Workspace extends PagedView
     @Override
     public void prepareAccessibilityDrop() { }
 
+    @Override
     public void onDrop(final DragObject d) {
         mDragViewVisualCenter = d.getVisualCenter(mDragViewVisualCenter);
         CellLayout dropTargetLayout = mDropToLayout;
@@ -2557,6 +2569,7 @@ public class Workspace extends PagedView
                         if (pInfo != null && pInfo.resizeMode != AppWidgetProviderInfo.RESIZE_NONE
                                 && !d.accessibleDrag) {
                             mDelayedResizeRunnable = new Runnable() {
+                                @Override
                                 public void run() {
                                     if (!isPageInTransition()) {
                                         DragLayer dragLayer = mLauncher.getDragLayer();
@@ -2858,6 +2871,7 @@ public class Workspace extends PagedView
                 d.dragInfo instanceof PendingAddWidgetInfo);
     }
 
+    @Override
     public void onDragOver(DragObject d) {
         // Skip drag over events while we are dragging over side pages
         if (!transitionStateShouldAllowDrop()) return;
@@ -3078,6 +3092,7 @@ public class Workspace extends PagedView
             bg.isClipping = false;
         }
 
+        @Override
         public void onAlarm(Alarm alarm) {
             mFolderCreateBg = bg;
             mFolderCreateBg.animateToAccept(layout, cellX, cellY);
@@ -3103,6 +3118,7 @@ public class Workspace extends PagedView
             this.dragObject = dragObject;
         }
 
+        @Override
         public void onAlarm(Alarm alarm) {
             int[] resultSpan = new int[2];
             mTargetCell = findNearestArea((int) mDragViewVisualCenter[0],
@@ -3499,6 +3515,7 @@ public class Workspace extends PagedView
         if (mDeferDropAfterUninstall) {
             final CellLayout.CellInfo dragInfo = mDragInfo;
             mDeferredAction = new Runnable() {
+                @Override
                 public void run() {
                     mDragInfo = dragInfo; // Restore the drag info that was cleared in onDragEnd()
                     onDropCompleted(target, d, isFlingToDelete, success);
@@ -3602,6 +3619,7 @@ public class Workspace extends PagedView
         return true;
     }
 
+    @Override
     public boolean isDropEnabled() {
         return true;
     }
@@ -4061,16 +4079,16 @@ public class Workspace extends PagedView
     }
 
     @Override
-    public void fillInLogContainerData(View v, ItemInfo info, Target target, Target targetParent) {
+    public void fillInLogContainerData(View v, ItemInfo info, LauncherLogProto.Target target, LauncherLogProto.Target targetParent) {
         target.gridX = info.cellX;
         target.gridY = info.cellY;
         target.pageIndex = getCurrentPage();
-        targetParent.containerType = ContainerType.WORKSPACE;
+        targetParent.containerType = LauncherLogProto.ContainerType.WORKSPACE;
         if (info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
             target.rank = info.rank;
-            targetParent.containerType = ContainerType.HOTSEAT;
+            targetParent.containerType = LauncherLogProto.ContainerType.HOTSEAT;
         } else if (info.container >= 0) {
-            targetParent.containerType = ContainerType.FOLDER;
+            targetParent.containerType = LauncherLogProto.ContainerType.FOLDER;
         }
     }
 

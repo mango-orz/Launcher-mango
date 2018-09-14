@@ -15,7 +15,7 @@
      limitations under the License.
 -->
 
-<profiles xmlns:launcher="http://schemas.android.com/apk/res-auto/com.android.launcher3" >
+<profiles xmlns:launcher="http://schemas.android.com/apk/res-auto" >
 
     <profile
         launcher:name="Super Short Stubby"
@@ -29,7 +29,9 @@
         launcher:iconSize="48"
         launcher:iconTextSize="13.0"
         launcher:numHotseatIcons="3"
+        launcher:landscapeIconSize="3"
         launcher:defaultLayoutId="@xml/default_workspace_3x3"
+        launcher:demoModeLayoutId="@xml/default_workspace_3x3"
         />
 
     <profile

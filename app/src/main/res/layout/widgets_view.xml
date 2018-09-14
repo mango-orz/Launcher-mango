@@ -16,7 +16,7 @@
 <!-- The top and bottom paddings are defined in this container, but since we want
      the list view to span the full width (for touch interception purposes), we
      will bake the left/right padding into that view's background itself. -->
-<com.android.launcher3.widget.WidgetsContainerView
+<com.launcher.mango.widget.WidgetsContainerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:launcher="http://schemas.android.com/apk/res-auto"
     android:id="@+id/widgets_view"
@@ -43,7 +43,7 @@
         android:elevation="15dp"
         android:visibility="gone">
 
-        <com.android.launcher3.widget.WidgetsRecyclerView
+        <com.launcher.mango.widget.WidgetsRecyclerView
             android:id="@+id/widgets_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center" />
 
-        <com.android.launcher3.views.RecyclerViewFastScroller
+        <com.launcher.mango.views.RecyclerViewFastScroller
             android:id="@+id/fast_scroller"
             android:layout_width="@dimen/fastscroll_width"
             android:layout_height="match_parent"
@@ -70,4 +70,4 @@
 
     </FrameLayout>
 
-</com.android.launcher3.widget.WidgetsContainerView>
+</com.launcher.mango.widget.WidgetsContainerView>

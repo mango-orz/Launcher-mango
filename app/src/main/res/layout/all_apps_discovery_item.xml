@@ -13,7 +13,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<com.android.launcher3.discovery.AppDiscoveryItemView
+<com.launcher.mango.discovery.AppDiscoveryItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
                 android:layout_gravity="center_vertical"
                 android:includeFontPadding="false"/>
 
-            <com.android.launcher3.discovery.RatingView
+            <com.launcher.mango.discovery.RatingView
                 android:id="@+id/rating_view"
                 android:layout_width="70dp"
                 android:layout_height="16dp"
@@ -99,4 +99,4 @@
         android:src="@drawable/all_apps_divider"
         android:scaleType="fitXY"
         android:focusable="false" />
-</com.android.launcher3.discovery.AppDiscoveryItemView>
+</com.launcher.mango.discovery.AppDiscoveryItemView>

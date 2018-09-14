@@ -15,7 +15,7 @@
 -->
 
 
-<com.android.launcher3.notification.NotificationMainView
+<com.launcher.mango.notification.NotificationMainView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -62,5 +62,5 @@
         android:layout_marginBottom="7dp"
         android:layout_gravity="center_vertical|end" />
 
-</com.android.launcher3.notification.NotificationMainView>
+</com.launcher.mango.notification.NotificationMainView>
 

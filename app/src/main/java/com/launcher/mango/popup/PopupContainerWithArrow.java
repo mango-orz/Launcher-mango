@@ -71,6 +71,9 @@ import com.launcher.mango.notification.NotificationKeyData;
 import com.launcher.mango.shortcuts.DeepShortcutManager;
 import com.launcher.mango.shortcuts.DeepShortcutView;
 import com.launcher.mango.shortcuts.ShortcutsItemView;
+import com.launcher.mango.userevent.nano.LauncherLogProto.ContainerType;
+import com.launcher.mango.userevent.nano.LauncherLogProto.ItemType;
+import com.launcher.mango.userevent.nano.LauncherLogProto.Target;
 import com.launcher.mango.util.PackageUserKey;
 import com.launcher.mango.util.Themes;
 
@@ -81,10 +84,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.launcher.mango.popup.PopupPopulator.MAX_SHORTCUTS_IF_NOTIFICATIONS;
-import com.launcher.mango.userevent.nano.LauncherLogProto.ContainerType;
-import com.launcher.mango.userevent.nano.LauncherLogProto.ItemType;
-import com.launcher.mango.userevent.nano.LauncherLogProto.Target;
+import static com.launcher.mango.popup.PopupPopulator.MAX_SHORTCUTS_IF_NOTIFICATIONS;
 
 /**
  * A container for shortcuts to deep links within apps.
@@ -101,7 +101,8 @@ public class PopupContainerWithArrow extends AbstractFloatingView implements Dra
             ROUNDED_BOTTOM_CORNERS
     })
     @Retention(RetentionPolicy.SOURCE)
-    public  @interface RoundedCornerFlags {}
+    public @interface RoundedCornerFlags {
+    }
 
     protected final Launcher mLauncher;
     private final int mStartDragThreshold;
@@ -149,6 +150,7 @@ public class PopupContainerWithArrow extends AbstractFloatingView implements Dra
 
     /**
      * Shows the notifications and deep shortcuts associated with {@param icon}.
+     *
      * @return the container if shown or null.
      */
     public static PopupContainerWithArrow showForIcon(BubbleTextView icon) {
@@ -180,7 +182,7 @@ public class PopupContainerWithArrow extends AbstractFloatingView implements Dra
     }
 
     public void populateAndShow(final BubbleTextView originalIcon, final List<String> shortcutIds,
-            final List<NotificationKeyData> notificationKeys, List<SystemShortcut> systemShortcuts) {
+                                final List<NotificationKeyData> notificationKeys, List<SystemShortcut> systemShortcuts) {
         final Resources resources = getResources();
         final int arrowWidth = resources.getDimensionPixelSize(R.dimen.popup_arrow_width);
         final int arrowHeight = resources.getDimensionPixelSize(R.dimen.popup_arrow_height);
@@ -428,7 +430,7 @@ public class PopupContainerWithArrow extends AbstractFloatingView implements Dra
      */
     private Point computeAnimStartPoint(int itemsTotalHeight) {
         int arrowCenterX = getResources().getDimensionPixelSize(mIsLeftAligned ^ mIsRtl ?
-                R.dimen.popup_arrow_horizontal_center_start:
+                R.dimen.popup_arrow_horizontal_center_start :
                 R.dimen.popup_arrow_horizontal_center_end);
         if (!mIsLeftAligned) {
             arrowCenterX = getMeasuredWidth() - arrowCenterX;
@@ -442,13 +444,13 @@ public class PopupContainerWithArrow extends AbstractFloatingView implements Dra
 
     /**
      * Orients this container above or below the given icon, aligning with the left or right.
-     *
+     * <p>
      * These are the preferred orientations, in order (RTL prefers right-aligned over left):
      * - Above and left-aligned
      * - Above and right-aligned
      * - Below and left-aligned
      * - Below and right-aligned
-     *
+     * <p>
      * So we always align left if there is enough horizontal space
      * and align above if there is enough vertical space.
      */
@@ -551,8 +553,9 @@ public class PopupContainerWithArrow extends AbstractFloatingView implements Dra
 
     /**
      * Adds an arrow view pointing at the original icon.
+     *
      * @param horizontalOffset the horizontal offset of the arrow, so that it
-     *                              points at the center of the original icon
+     *                         points at the center of the original icon
      */
     private View addArrowView(int horizontalOffset, int verticalOffset, int width, int height) {
         LayoutParams layoutParams = new LayoutParams(width, height);
@@ -600,7 +603,7 @@ public class PopupContainerWithArrow extends AbstractFloatingView implements Dra
 
     /**
      * Determines when the deferred drag should be started.
-     *
+     * <p>
      * Current behavior:
      * - Start the drag if the touch passes a certain distance from the original touch down.
      */
@@ -743,7 +746,7 @@ public class PopupContainerWithArrow extends AbstractFloatingView implements Dra
      * Animates the height of the notification item and the translationY of other items accordingly.
      */
     public Animator adjustItemHeights(int notificationHeightToRemove, int shortcutHeightToAdd,
-            int duration) {
+                                      int duration) {
         if (mReduceHeightAnimatorSet != null) {
             mReduceHeightAnimatorSet.cancel();
         }
@@ -813,7 +816,7 @@ public class PopupContainerWithArrow extends AbstractFloatingView implements Dra
 
     @Override
     public void onDropCompleted(View target, DropTarget.DragObject d, boolean isFlingToDelete,
-            boolean success) {
+                                boolean success) {
         if (!success) {
             d.dragView.remove();
             mLauncher.showWorkspace(true);

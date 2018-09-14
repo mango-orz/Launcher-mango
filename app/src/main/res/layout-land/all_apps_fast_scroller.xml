@@ -25,7 +25,7 @@
         android:layout_marginTop="-5dp"
         android:layout_marginEnd="-45dp" />
 
-    <com.android.launcher3.allapps.LandscapeFastScroller
+    <com.launcher.mango.allapps.LandscapeFastScroller
         android:id="@+id/fast_scroller"
         android:layout_width="48dp"
         android:layout_height="wrap_content"

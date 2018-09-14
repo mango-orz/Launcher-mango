@@ -11,8 +11,8 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewDebug;
 
-import com.launcher.mango.util.SystemUiController.FLAG_DARK_NAV;
-import com.launcher.mango.util.SystemUiController.UI_STATE_ROOT_VIEW;
+import static com.launcher.mango.util.SystemUiController.FLAG_DARK_NAV;
+import static com.launcher.mango.util.SystemUiController.UI_STATE_ROOT_VIEW;
 
 public class LauncherRootView extends InsettableFrameLayout {
 

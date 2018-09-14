@@ -20,13 +20,13 @@ import android.graphics.Rect;
 
 import com.launcher.mango.popup.PopupContainerWithArrow;
 
-import com.launcher.mango.popup.PopupContainerWithArrow.ROUNDED_BOTTOM_CORNERS;
-import com.launcher.mango.popup.PopupContainerWithArrow.ROUNDED_TOP_CORNERS;
+import static com.launcher.mango.popup.PopupContainerWithArrow.ROUNDED_BOTTOM_CORNERS;
+import static com.launcher.mango.popup.PopupContainerWithArrow.ROUNDED_TOP_CORNERS;
 
 /**
  * A {@link RevealOutlineAnimation} that provides an outline that interpolates between two radii
  * and two {@link Rect}s.
- *
+ * <p>
  * An example usage of this provider is an outline that starts out as a circle and ends
  * as a rounded rectangle.
  */
@@ -37,16 +37,17 @@ public class RoundedRectRevealOutlineProvider extends RevealOutlineAnimation {
     private final Rect mStartRect;
     private final Rect mEndRect;
 
-    private final @PopupContainerWithArrow.RoundedCornerFlags int mRoundedCorners;
+    private final @PopupContainerWithArrow.RoundedCornerFlags
+    int mRoundedCorners;
 
     public RoundedRectRevealOutlineProvider(float startRadius, float endRadius, Rect startRect,
-            Rect endRect) {
+                                            Rect endRect) {
         this(startRadius, endRadius, startRect, endRect,
                 ROUNDED_TOP_CORNERS | ROUNDED_BOTTOM_CORNERS);
     }
 
     public RoundedRectRevealOutlineProvider(float startRadius, float endRadius, Rect startRect,
-            Rect endRect, int roundedCorners) {
+                                            Rect endRect, int roundedCorners) {
         mStartRadius = startRadius;
         mEndRadius = endRadius;
         mStartRect = startRect;

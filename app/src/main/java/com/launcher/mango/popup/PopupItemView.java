@@ -34,8 +34,8 @@ import com.launcher.mango.R;
 import com.launcher.mango.Utilities;
 import com.launcher.mango.popup.PopupContainerWithArrow.RoundedCornerFlags;
 
-import com.launcher.mango.popup.PopupContainerWithArrow.ROUNDED_BOTTOM_CORNERS;
-import com.launcher.mango.popup.PopupContainerWithArrow.ROUNDED_TOP_CORNERS;
+import static com.launcher.mango.popup.PopupContainerWithArrow.ROUNDED_BOTTOM_CORNERS;
+import static com.launcher.mango.popup.PopupContainerWithArrow.ROUNDED_TOP_CORNERS;
 
 /**
  * An abstract {@link FrameLayout} that contains content for {@link PopupContainerWithArrow}.

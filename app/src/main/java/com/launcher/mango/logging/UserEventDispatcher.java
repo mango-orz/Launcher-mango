@@ -27,27 +27,28 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 
-import com.android.launcher3.DropTarget;
-import com.android.launcher3.ItemInfo;
-import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
-import com.android.launcher3.config.FeatureFlags;
-import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
-import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
-import com.android.launcher3.userevent.nano.LauncherLogProto.LauncherEvent;
-import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
-import com.android.launcher3.util.LogConfig;
+import com.launcher.mango.DropTarget;
+import com.launcher.mango.ItemInfo;
+import com.launcher.mango.R;
+import com.launcher.mango.Utilities;
+import com.launcher.mango.config.FeatureFlags;
+import com.launcher.mango.userevent.nano.LauncherLogProto.Action;
+import com.launcher.mango.userevent.nano.LauncherLogProto.ContainerType;
+import com.launcher.mango.userevent.nano.LauncherLogProto.LauncherEvent;
+import com.launcher.mango.userevent.nano.LauncherLogProto.Target;
+import com.launcher.mango.util.LogConfig;
 
 import java.util.Locale;
 import java.util.UUID;
 
-import com.launcher.mango.logging.LoggerUtils.newCommandAction;
-import com.launcher.mango.logging.LoggerUtils.newContainerTarget;
-import com.launcher.mango.logging.LoggerUtils.newDropTarget;
-import com.launcher.mango.logging.LoggerUtils.newItemTarget;
-import com.launcher.mango.logging.LoggerUtils.newLauncherEvent;
-import com.launcher.mango.logging.LoggerUtils.newTarget;
-import com.launcher.mango.logging.LoggerUtils.newTouchAction;
+import static com.launcher.mango.logging.LoggerUtils.newCommandAction;
+import static com.launcher.mango.logging.LoggerUtils.newContainerTarget;
+import static com.launcher.mango.logging.LoggerUtils.newDropTarget;
+import static com.launcher.mango.logging.LoggerUtils.newItemTarget;
+import static com.launcher.mango.logging.LoggerUtils.newLauncherEvent;
+import static com.launcher.mango.logging.LoggerUtils.newTarget;
+import static com.launcher.mango.logging.LoggerUtils.newTouchAction;
+
 
 /**
  * Manages the creation of {@link LauncherEvent}.

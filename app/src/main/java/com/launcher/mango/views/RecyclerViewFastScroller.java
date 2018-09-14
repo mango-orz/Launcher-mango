@@ -66,7 +66,9 @@ public class RecyclerViewFastScroller extends View {
     private final int mMaxWidth;
     private final int mThumbPadding;
 
-    /** Keeps the last known scrolling delta/velocity along y-axis. */
+    /**
+     * Keeps the last known scrolling delta/velocity along y-axis.
+     */
     private int mDy = 0;
     private final float mDeltaThreshold;
 
@@ -250,6 +252,8 @@ public class RecyclerViewFastScroller extends View {
                     showActiveScrollbar(false);
                 }
                 break;
+            default:
+                break;
         }
         return mIsDragging;
     }
@@ -280,11 +284,12 @@ public class RecyclerViewFastScroller extends View {
         setThumbOffsetY((int) mLastTouchY);
     }
 
+    @Override
     public void onDraw(Canvas canvas) {
         if (mThumbOffsetY < 0) {
             return;
         }
-        int saveCount = canvas.save(Canvas.MATRIX_SAVE_FLAG);
+        int saveCount = canvas.save();
         canvas.translate(getWidth() / 2, mRv.getPaddingTop());
         // Draw the track
         float halfW = mWidth / 2;

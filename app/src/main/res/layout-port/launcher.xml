@@ -24,7 +24,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <com.android.launcher3.dragndrop.DragLayer
+    <com.launcher.mango.dragndrop.DragLayer
         android:id="@+id/drag_layer"
         android:clipChildren="false"
         android:importantForAccessibility="no"
@@ -77,6 +77,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="invisible" />
-    </com.android.launcher3.dragndrop.DragLayer>
+    </com.launcher.mango.dragndrop.DragLayer>
 
 </com.launcher.mango.LauncherRootView>
