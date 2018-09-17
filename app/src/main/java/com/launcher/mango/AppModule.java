@@ -3,16 +3,17 @@ package com.launcher.mango;
 import android.content.Context;
 
 import com.launcher.mango.util.LooperExecutor;
+import com.launcher.mango.util.RxJava;
 
 /**
- * provider
+ * app provider
+ *
  * @author tic
- * created on 18-9-17
+ *         created on 18-9-17
  */
 public class AppModule {
 
     private static LooperExecutor mLooper;
-
 
     public static void init(Context context) {
 
@@ -20,7 +21,14 @@ public class AppModule {
     }
 
     private static void initAsync(Context context) {
-        mLooper = new LooperExecutor(LauncherModel.getWorkerLooper());
+        RxJava.create()
+                .observable(e -> {
+                    mLooper = new LooperExecutor(LauncherModel.getWorkerLooper());
+                    e.onNext("done");
+                    e.onComplete();
+                })
+                .subscribeOn()
+                .go();
     }
 
     public static LooperExecutor provideLooper() {
