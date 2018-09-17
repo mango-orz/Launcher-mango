@@ -17,10 +17,9 @@
 ** limitations under the License.
 */
 -->
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.launcher.mango">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.launcher.mango">
 
     <uses-sdk
         android:minSdkVersion="21"
@@ -29,6 +28,7 @@
     Manifest entries specific to Launcher3. This is merged with AndroidManifest-common.xml.
     Refer comments around specific entries on how to extend individual components.
     -->
+
 
     <!--
     Permissions required for read/write access to the workspace data. These permission name
@@ -55,21 +55,25 @@
 
     <permission
         android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="dangerous"
+        android:description="@string/permdesc_install_shortcut"
         android:label="@string/permlab_install_shortcut"
-        android:description="@string/permdesc_install_shortcut" />
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+        android:protectionLevel="dangerous"/>
 
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.SET_WALLPAPER" />
-    <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
-    <uses-permission android:name="android.permission.BIND_APPWIDGET"
-                     tools:ignore="ProtectedPermissions"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
+    <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS"/>
+    <uses-permission
+        android:name="android.permission.BIND_APPWIDGET"
+        tools:ignore="ProtectedPermissions"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application
-        android:backupAgent="com.launcher.mango.LauncherBackupAgent"
+        android:name=".LauncherApplication"
+        android:backupAgent=".LauncherBackupAgent"
         android:fullBackupContent="@xml/backupscheme"
         android:fullBackupOnly="true"
         android:hardwareAccelerated="true"
@@ -86,7 +90,7 @@
         attributes and intent filters the same
         -->
         <activity
-            android:name="com.launcher.mango.Launcher3"
+            android:name=".Launcher3"
             android:clearTaskOnLaunch="true"
             android:configChanges="keyboard|keyboardHidden|navigation"
             android:enabled="true"
@@ -108,16 +112,15 @@
             </intent-filter>
         </activity>
 
-        <!--
-        The settings activity. When extending keep the intent filter present
-        -->
+        <!--         The settings activity. When extending keep the intent filter present -->
         <activity
-            android:name="com.launcher.mango.SettingsActivity"
+            android:name=".SettingsActivity"
             android:autoRemoveFromRecents="true"
             android:label="@string/settings_button_text"
             android:theme="@android:style/Theme.DeviceDefault.Settings">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -128,13 +131,14 @@
         represent the package name.
         -->
         <provider
-            android:name="com.launcher.mango.LauncherProvider"
+            android:name=".LauncherProvider"
             android:authorities="com.launcher.mango.settings"
             android:exported="true"
             android:readPermission="com.launcher.mango.permission.READ_SETTINGS"
             android:writePermission="com.launcher.mango.permission.WRITE_SETTINGS"/>
 
-        <!-- ENABLE_FOR_TESTING
+        <!--
+        ENABLE_FOR_TESTING
 
         <activity
             android:name="com.launcher.mango.testing.LauncherExtension"
@@ -179,65 +183,66 @@
         </activity>
 
         <service android:name="com.launcher.mango.testing.MemoryTracker" />
-
         -->
+
 
         <!-- Intent received used to install shortcuts from other applications -->
         <receiver
-            android:name="com.launcher.mango.InstallShortcutReceiver"
-            android:permission="com.android.launcher.permission.INSTALL_SHORTCUT"
-            android:enabled="@bool/enable_install_shortcut_api" >
+            android:name=".InstallShortcutReceiver"
+            android:enabled="@bool/enable_install_shortcut_api"
+            android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">
             <intent-filter>
-                <action android:name="com.android.launcher.action.INSTALL_SHORTCUT" />
+                <action android:name="com.android.launcher.action.INSTALL_SHORTCUT"/>
             </intent-filter>
         </receiver>
 
         <!-- Intent received when a session is committed -->
-        <receiver
-            android:name="com.launcher.mango.SessionCommitReceiver" >
+        <receiver android:name=".SessionCommitReceiver">
             <intent-filter>
-                <action android:name="android.content.pm.action.SESSION_COMMITTED" />
+                <action android:name="android.content.pm.action.SESSION_COMMITTED"/>
             </intent-filter>
         </receiver>
 
         <!-- Intent received used to initialize a restored widget -->
-        <receiver android:name="com.launcher.mango.AppWidgetsRestoredReceiver" >
+        <receiver android:name=".AppWidgetsRestoredReceiver">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_HOST_RESTORED"/>
             </intent-filter>
         </receiver>
 
-        <service android:name="com.launcher.mango.dynamicui.ColorExtractionService"
-                 android:exported="false"
-                 android:process=":wallpaper_chooser"
-                 android:permission="android.permission.BIND_JOB_SERVICE">
-        </service>
-
         <service
-            android:name="com.launcher.mango.compat.WallpaperManagerCompatVL$ColorExtractionService"
+            android:name=".dynamicui.ColorExtractionService"
             android:exported="false"
-            android:process=":wallpaper_chooser"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <service android:name="com.launcher.mango.notification.NotificationListener"
-                 android:enabled="@bool/notification_badging_enabled"
-                 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:process=":wallpaper_chooser">
+        </service>
+        <service
+            android:name=".compat.WallpaperManagerCompatVL$ColorExtractionService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:process=":wallpaper_chooser"/>
+        <service
+            android:name=".notification.NotificationListener"
+            android:enabled="@bool/notification_badging_enabled"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService" />
+                <action android:name="android.service.notification.NotificationListenerService"/>
             </intent-filter>
         </service>
 
-        <meta-data android:name="android.nfc.disable_beam_default"
-                   android:value="true" />
+        <meta-data
+            android:name="android.nfc.disable_beam_default"
+            android:value="true"/>
 
-        <activity android:name="com.launcher.mango.dragndrop.AddItemActivity"
-                  android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.Alert"
-                  android:excludeFromRecents="true"
-                  android:autoRemoveFromRecents="true"
-                  android:label="@string/action_add_to_workspace" >
+        <activity
+            android:name=".dragndrop.AddItemActivity"
+            android:autoRemoveFromRecents="true"
+            android:excludeFromRecents="true"
+            android:label="@string/action_add_to_workspace"
+            android:theme="@android:style/Theme.DeviceDefault.Light.Dialog.Alert">
             <intent-filter>
-                <action android:name="android.content.pm.action.CONFIRM_PIN_SHORTCUT" />
-                <action android:name="android.content.pm.action.CONFIRM_PIN_APPWIDGET" />
+                <action android:name="android.content.pm.action.CONFIRM_PIN_SHORTCUT"/>
+                <action android:name="android.content.pm.action.CONFIRM_PIN_APPWIDGET"/>
             </intent-filter>
         </activity>
 
@@ -247,7 +252,17 @@
         -->
         <meta-data
             android:name="com.launcher.mango.launcher_dump_provider"
-            android:value="com.launcher.mango.LauncherProvider" />
+            android:value="com.launcher.mango.LauncherProvider"/>
 
+        <receiver android:name=".widget.view.SimpleClockWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/simple_clock_widget_info"/>
+        </receiver>
     </application>
+
 </manifest>

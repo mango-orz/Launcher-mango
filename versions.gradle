@@ -32,6 +32,10 @@ versions.espresso_deps = "2.1"
 versions.junit4 = "4.12"
 versions.test_runner = "1.0.2"
 versions.constraint_layout = "1.1.2"
+versions.rxandroid = "2.0.1"
+versions.rxjava = "2.0.8"
+versions.rxstreams = "1.0.0"
+versions.rxpermissions = "0.9.3@aar"
 
 def deps = [:]
 deps.classpath_gradle = "com.android.tools.build:gradle:$versions.gradle"
@@ -50,6 +54,8 @@ support.design = "com.android.support:design:$versions.support"
 support.v4 = "com.android.support:support-v4:$versions.support"
 support.constraint_layout = "com.android.support.constraint:constraint-layout:$versions.constraint_layout"
 support.annotations = "com.android.support:support-annotations:$versions.support"
+support.preference_v7 = "com.android.support:preference-v7:$versions.support"
+support.preference_v14 = "com.android.support:preference-v14:$versions.support"
 
 deps.support = support
 

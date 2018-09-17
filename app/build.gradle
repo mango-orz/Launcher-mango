@@ -43,6 +43,10 @@ android {
         }
     }
 
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -58,6 +62,8 @@ dependencies {
 
     implementation deps.support.app_compat
     implementation deps.support.v4
+    implementation deps.support.preference_v7
+    implementation deps.support.preference_v14
     implementation deps.support.palette
     implementation deps.support.recyclerview
     implementation deps.support.constraint_layout
@@ -65,6 +71,9 @@ dependencies {
 
     implementation "com.google.protobuf.nano:protobuf-javanano:3.2.0rc2"
     implementation deps.google.guava
+
+    implementation deps.rx.android
+    implementation deps.rx.java
 }
 
 protobuf {

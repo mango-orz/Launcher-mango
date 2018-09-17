@@ -40,7 +40,15 @@
         <item>@string/icon_shape_circle</item>
         <item>@string/icon_shape_teardrop</item>
     </string-array>
-
+    <string-array translatable="false" name="launcher_style_names">
+        <!-- Option to not change the icon shape on home screen. [CHAR LIMIT=50] -->
+        <item>@string/launcher_style_drawer</item>
+        <item>@string/launcher_style_standard</item>
+    </string-array>
+    <string-array translatable="false" name="launcher_style_values">
+        <item>drawer</item>
+        <item>standard</item>
+    </string-array>
 <!-- DragController -->
     <item type="id" name="drag_event_parity" />
 

@@ -33,6 +33,7 @@ import android.preference.PreferenceFragment;
 import android.provider.Settings;
 
 import com.launcher.mango.graphics.IconShapeOverride;
+import com.launcher.mango.graphics.LauncherStyle;
 import com.launcher.mango.notification.NotificationListener;
 import com.launcher.mango.util.SettingsObserver;
 import com.launcher.mango.views.ButtonPreference;
@@ -113,6 +114,14 @@ public class SettingsActivity extends Activity {
                     IconShapeOverride.handlePreferenceUi((ListPreference) iconShapeOverride);
                 } else {
                     getPreferenceScreen().removePreference(iconShapeOverride);
+                }
+            }
+            Preference launcherStyle = findPreference(LauncherStyle.KEY_PREFERENCE);
+            if (launcherStyle != null) {
+                if (LauncherStyle.isSupported(getActivity())) {
+                    LauncherStyle.handlePreferenceUi((ListPreference) launcherStyle);
+                } else {
+                    getPreferenceScreen().removePreference(launcherStyle);
                 }
             }
         }

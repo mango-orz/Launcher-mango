@@ -32,7 +32,7 @@ abstract class BaseFlags {
 
     // Custom flags go below this
     public static boolean LAUNCHER3_DISABLE_ICON_NORMALIZATION = false;
-    public static boolean LAUNCHER3_LEGACY_FOLDER_ICON = false;
+    public static boolean LAUNCHER3_LEGACY_FOLDER_ICON = true;
     public static boolean LAUNCHER3_DISABLE_PINCH_TO_OVERVIEW = false;
     public static boolean LAUNCHER3_NEW_FOLDER_ANIMATION = true;
     // When enabled allows to use any point on the fast scrollbar to start dragging.
@@ -51,7 +51,7 @@ abstract class BaseFlags {
     // Feature flag to enable moving the QSB on the 0th screen of the workspace.
     public static final boolean QSB_ON_FIRST_SCREEN = true;
     // When enabled the all-apps icon is not added to the hotseat.
-    public static final boolean NO_ALL_APPS_ICON = true;
+    public static final boolean NO_ALL_APPS_ICON = false;
     // When enabled fling down gesture on the first workspace triggers search.
     public static final boolean PULLDOWN_SEARCH = false;
     // When enabled the status bar may show dark icons based on the top of the wallpaper.

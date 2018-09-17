@@ -26,6 +26,7 @@ import com.launcher.mango.util.Preconditions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Widgets data model that is used by the adapters of the widget views and controllers.
@@ -61,7 +62,8 @@ public class WidgetsModel {
 
             // Widgets
             AppWidgetManagerCompat widgetManager = AppWidgetManagerCompat.getInstance(context);
-            for (AppWidgetProviderInfo widgetInfo : widgetManager.getAllProviders(packageUser)) {
+            List<AppWidgetProviderInfo> all = widgetManager.getAllProviders(packageUser);
+            for (AppWidgetProviderInfo widgetInfo : all) {
                 widgetsAndShortcuts.add(new WidgetItem(LauncherAppWidgetProviderInfo
                         .fromProviderInfo(context, widgetInfo), pm, idp));
             }
