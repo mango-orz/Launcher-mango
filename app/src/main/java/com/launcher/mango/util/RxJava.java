@@ -17,7 +17,7 @@ import io.reactivex.schedulers.Schedulers;
  * RxAndroid utils
  *
  * @author tic
- *         created on 18-9-17
+ * created on 18-9-17
  */
 public class RxJava<T> {
 
@@ -54,10 +54,16 @@ public class RxJava<T> {
     }
 
     public RxJava<T> subscribeOn(boolean async) {
-        Preconditions.assertNotNull(mObservable);
         if (async) {
-            mObservable.observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io());
+            if (mObservable != null) {
+                mObservable = mObservable
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io());
+            } else if (mFlowable != null) {
+                mFlowable = mFlowable
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io());
+            }
         }
         return this;
     }
@@ -98,10 +104,7 @@ public class RxJava<T> {
 
         if (mObservable != null) {
             mDispose = mObservable.subscribe(nextConsumer, throwable, action);
-            return this;
-        }
-
-        if (mFlowable != null) {
+        } else if (mFlowable != null) {
             mDispose = mFlowable.subscribe(nextConsumer, throwable, action);
         }
         return this;
