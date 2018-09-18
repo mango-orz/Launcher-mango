@@ -1118,6 +1118,7 @@ public class Workspace extends PagedView
         int childId = mLauncher.getViewIdForItem(info);
 
         boolean markCellsAsOccupied = !(child instanceof Folder);
+        Log.e(TAG, "layout screen:" + screenId);
         if (!layout.addViewToCellLayout(child, -1, childId, lp, markCellsAsOccupied)) {
             // TODO: This branch occurs when the workspace is adding views
             // outside of the defined grid

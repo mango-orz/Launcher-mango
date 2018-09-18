@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.os.Build;
 import android.os.UserHandle;
+import android.support.annotation.RequiresApi;
 
 /**
  * Wrapper class for {@link ShortcutInfo}, representing deep shortcuts into apps.

@@ -17,6 +17,7 @@ package com.launcher.mango.util;
 
 /**
  * A runnable with an id associated which is used for equality check.
+ * @author tic
  */
 public abstract class RunnableWithId implements Runnable {
 

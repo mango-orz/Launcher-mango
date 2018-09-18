@@ -44,13 +44,21 @@ public class AllAppsList {
 
     public static final int DEFAULT_APPLICATIONS_NUMBER = 42;
 
-    /** The list off all apps. */
+    /**
+     * The list off all apps.
+     */
     public final ArrayList<AppInfo> data = new ArrayList<>(DEFAULT_APPLICATIONS_NUMBER);
-    /** The list of apps that have been added since the last notify() call. */
+    /**
+     * The list of apps that have been added since the last notify() call.
+     */
     public ArrayList<AppInfo> added = new ArrayList<>(DEFAULT_APPLICATIONS_NUMBER);
-    /** The list of apps that have been removed since the last notify() call. */
+    /**
+     * The list of apps that have been removed since the last notify() call.
+     */
     public ArrayList<AppInfo> removed = new ArrayList<>();
-    /** The list of apps that have been modified since the last notify() call. */
+    /**
+     * The list of apps that have been modified since the last notify() call.
+     */
     public ArrayList<AppInfo> modified = new ArrayList<>();
 
     private IconCache mIconCache;
@@ -65,14 +73,21 @@ public class AllAppsList {
         mAppFilter = appFilter;
     }
 
+    public boolean filter(ComponentName componentName) {
+        if (mAppFilter != null && !mAppFilter.shouldShowApp(componentName)) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Add the supplied ApplicationInfo objects to the list, and enqueue it into the
      * list to broadcast when notify() is called.
-     *
+     * <p>
      * If the app is already in the list, doesn't add it.
      */
     public void add(AppInfo info, LauncherActivityInfo activityInfo) {
-        if (!mAppFilter.shouldShowApp(info.componentName)) {
+        if (filter(info.componentName)) {
             return;
         }
         if (findAppInfo(info.componentName, info.user) != null) {
@@ -161,7 +176,7 @@ public class AllAppsList {
     }
 
     public void updateIconsAndLabels(HashSet<String> packages, UserHandle user,
-            ArrayList<AppInfo> outUpdates) {
+                                     ArrayList<AppInfo> outUpdates) {
         for (AppInfo info : data) {
             if (info.user.equals(user) && packages.contains(info.componentName.getPackageName())) {
                 mIconCache.updateTitleAndIcon(info);
@@ -222,7 +237,7 @@ public class AllAppsList {
      * Returns whether <em>apps</em> contains <em>component</em>.
      */
     private static boolean findActivity(List<LauncherActivityInfo> apps,
-            ComponentName component) {
+                                        ComponentName component) {
         for (LauncherActivityInfo info : apps) {
             if (info.getComponentName().equals(component)) {
                 return true;
@@ -236,9 +251,10 @@ public class AllAppsList {
      *
      * @return the corresponding AppInfo or null
      */
-    private @Nullable AppInfo findAppInfo(@NonNull ComponentName componentName,
-                                          @NonNull UserHandle user) {
-        for (AppInfo info: data) {
+    private @Nullable
+    AppInfo findAppInfo(@NonNull ComponentName componentName,
+                        @NonNull UserHandle user) {
+        for (AppInfo info : data) {
             if (componentName.equals(info.componentName) && user.equals(info.user)) {
                 return info;
             }

@@ -15,12 +15,14 @@
  */
 package com.launcher.mango.model;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.MutableInt;
 
+import com.google.protobuf.nano.MessageNano;
 import com.launcher.mango.FolderInfo;
 import com.launcher.mango.InstallShortcutReceiver;
 import com.launcher.mango.ItemInfo;
@@ -28,14 +30,19 @@ import com.launcher.mango.LauncherAppWidgetInfo;
 import com.launcher.mango.LauncherSettings;
 import com.launcher.mango.ShortcutInfo;
 import com.launcher.mango.config.FeatureFlags;
+import com.launcher.mango.logging.DumpTargetWrapper;
+import com.launcher.mango.model.nano.LauncherDumpProto;
 import com.launcher.mango.shortcuts.DeepShortcutManager;
 import com.launcher.mango.shortcuts.ShortcutInfoCompat;
 import com.launcher.mango.shortcuts.ShortcutKey;
+import com.launcher.mango.userevent.nano.LauncherLogProto;
 import com.launcher.mango.util.ComponentKey;
 import com.launcher.mango.util.LongArrayMap;
 import com.launcher.mango.util.MultiHashMap;
 
 import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,8 +118,8 @@ public class BgDataModel {
         deepShortcutMap.clear();
     }
 
-     public synchronized void dump(String prefix, FileDescriptor fd, PrintWriter writer,
-             String[] args) {
+    public synchronized void dump(String prefix, FileDescriptor fd, PrintWriter writer,
+                                  String[] args) {
         if (args.length > 0 && TextUtils.equals(args[0], "--proto")) {
             dumpProto(prefix, fd, writer, args);
             return;
@@ -132,11 +139,11 @@ public class BgDataModel {
             writer.println(prefix + '\t' + appWidgets.get(i).toString());
         }
         writer.println(prefix + " ---- folder items ");
-        for (int i = 0; i< folders.size(); i++) {
+        for (int i = 0; i < folders.size(); i++) {
             writer.println(prefix + '\t' + folders.valueAt(i).toString());
         }
         writer.println(prefix + " ---- items id map ");
-        for (int i = 0; i< itemsIdMap.size(); i++) {
+        for (int i = 0; i < itemsIdMap.size(); i++) {
             writer.println(prefix + '\t' + itemsIdMap.valueAt(i).toString());
         }
 
@@ -153,85 +160,85 @@ public class BgDataModel {
     }
 
     private synchronized void dumpProto(String prefix, FileDescriptor fd, PrintWriter writer,
-            String[] args) {
+                                        String[] args) {
 
-//        // Add top parent nodes. (L1)
-//        DumpTargetWrapper hotseat = new DumpTargetWrapper(ContainerType.HOTSEAT, 0);
-//        LongArrayMap<DumpTargetWrapper> workspaces = new LongArrayMap<>();
-//        for (int i = 0; i < workspaceScreens.size(); i++) {
-//            workspaces.put(workspaceScreens.get(i),
-//                    new DumpTargetWrapper(ContainerType.WORKSPACE, i));
-//        }
-//        DumpTargetWrapper dtw;
-//        // Add non leaf / non top nodes (L2)
-//        for (int i = 0; i < folders.size(); i++) {
-//            FolderInfo fInfo = folders.valueAt(i);
-//            dtw = new DumpTargetWrapper(ContainerType.FOLDER, folders.size());
-//            dtw.writeToDumpTarget(fInfo);
-//            for(ShortcutInfo sInfo: fInfo.contents) {
-//                DumpTargetWrapper child = new DumpTargetWrapper(sInfo);
-//                child.writeToDumpTarget(sInfo);
-//                dtw.add(child);
-//            }
-//            if (fInfo.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
-//                hotseat.add(dtw);
-//            } else if (fInfo.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
-//                workspaces.get(fInfo.screenId).add(dtw);
-//            }
-//        }
-//        // Add leaf nodes (L3): *Info
-//        for (int i = 0; i < workspaceItems.size(); i++) {
-//            ItemInfo info = workspaceItems.get(i);
-//            if (info instanceof FolderInfo) {
-//                continue;
-//            }
-//            dtw = new DumpTargetWrapper(info);
-//            dtw.writeToDumpTarget(info);
-//            if (info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
-//                hotseat.add(dtw);
-//            } else if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
-//                workspaces.get(info.screenId).add(dtw);
-//            }
-//        }
-//        for (int i = 0; i < appWidgets.size(); i++) {
-//            ItemInfo info = appWidgets.get(i);
-//            dtw = new DumpTargetWrapper(info);
-//            dtw.writeToDumpTarget(info);
-//            if (info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
-//                hotseat.add(dtw);
-//            } else if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
-//                workspaces.get(info.screenId).add(dtw);
-//            }
-//        }
-//
-//
-//        // Traverse target wrapper
-//        ArrayList<DumpTarget> targetList = new ArrayList<>();
-//        targetList.addAll(hotseat.getFlattenedList());
-//        for (int i = 0; i < workspaces.size(); i++) {
-//            targetList.addAll(workspaces.valueAt(i).getFlattenedList());
-//        }
-//
-//        if (args.length > 1 && TextUtils.equals(args[1], "--debug")) {
-//            for (int i = 0; i < targetList.size(); i++) {
-//                writer.println(prefix + DumpTargetWrapper.getDumpTargetStr(targetList.get(i)));
-//            }
-//            return;
-//        } else {
-//            LauncherDumpProto.LauncherImpression proto = new LauncherDumpProto.LauncherImpression();
-//            proto.targets = new DumpTarget[targetList.size()];
-//            for (int i = 0; i < targetList.size(); i++) {
-//                proto.targets[i] = targetList.get(i);
-//            }
-//            FileOutputStream fos = new FileOutputStream(fd);
-//            try {
-//
-//                fos.write(MessageNano.toByteArray(proto));
-//                Log.d(TAG, MessageNano.toByteArray(proto).length + "Bytes");
-//            } catch (IOException e) {
-//                Log.e(TAG, "Exception writing dumpsys --proto", e);
-//            }
-//        }
+        // Add top parent nodes. (L1)
+        DumpTargetWrapper hotseat = new DumpTargetWrapper(LauncherLogProto.ContainerType.HOTSEAT, 0);
+        LongArrayMap<DumpTargetWrapper> workspaces = new LongArrayMap<>();
+        for (int i = 0; i < workspaceScreens.size(); i++) {
+            workspaces.put(workspaceScreens.get(i),
+                    new DumpTargetWrapper(LauncherLogProto.ContainerType.WORKSPACE, i));
+        }
+        DumpTargetWrapper dtw;
+        // Add non leaf / non top nodes (L2)
+        for (int i = 0; i < folders.size(); i++) {
+            FolderInfo fInfo = folders.valueAt(i);
+            dtw = new DumpTargetWrapper(LauncherLogProto.ContainerType.FOLDER, folders.size());
+            dtw.writeToDumpTarget(fInfo);
+            for (ShortcutInfo sInfo : fInfo.contents) {
+                DumpTargetWrapper child = new DumpTargetWrapper(sInfo);
+                child.writeToDumpTarget(sInfo);
+                dtw.add(child);
+            }
+            if (fInfo.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+                hotseat.add(dtw);
+            } else if (fInfo.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                workspaces.get(fInfo.screenId).add(dtw);
+            }
+        }
+        // Add leaf nodes (L3): *Info
+        for (int i = 0; i < workspaceItems.size(); i++) {
+            ItemInfo info = workspaceItems.get(i);
+            if (info instanceof FolderInfo) {
+                continue;
+            }
+            dtw = new DumpTargetWrapper(info);
+            dtw.writeToDumpTarget(info);
+            if (info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+                hotseat.add(dtw);
+            } else if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                workspaces.get(info.screenId).add(dtw);
+            }
+        }
+        for (int i = 0; i < appWidgets.size(); i++) {
+            ItemInfo info = appWidgets.get(i);
+            dtw = new DumpTargetWrapper(info);
+            dtw.writeToDumpTarget(info);
+            if (info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+                hotseat.add(dtw);
+            } else if (info.container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
+                workspaces.get(info.screenId).add(dtw);
+            }
+        }
+
+
+        // Traverse target wrapper
+        ArrayList<LauncherDumpProto.DumpTarget> targetList = new ArrayList<>();
+        targetList.addAll(hotseat.getFlattenedList());
+        for (int i = 0; i < workspaces.size(); i++) {
+            targetList.addAll(workspaces.valueAt(i).getFlattenedList());
+        }
+
+        if (args.length > 1 && TextUtils.equals(args[1], "--debug")) {
+            for (int i = 0; i < targetList.size(); i++) {
+                writer.println(prefix + DumpTargetWrapper.getDumpTargetStr(targetList.get(i)));
+            }
+            return;
+        } else {
+            LauncherDumpProto.LauncherImpression proto = new LauncherDumpProto.LauncherImpression();
+            proto.targets = new LauncherDumpProto.DumpTarget[targetList.size()];
+            for (int i = 0; i < targetList.size(); i++) {
+                proto.targets[i] = targetList.get(i);
+            }
+            FileOutputStream fos = new FileOutputStream(fd);
+            try {
+
+                fos.write(MessageNano.toByteArray(proto));
+                Log.d(TAG, MessageNano.toByteArray(proto).length + "Bytes");
+            } catch (IOException e) {
+                Log.e(TAG, "Exception writing dumpsys --proto", e);
+            }
+        }
     }
 
     public synchronized void removeItem(Context context, ItemInfo... items) {
@@ -262,7 +269,7 @@ public class BgDataModel {
                     MutableInt count = pinnedShortcutCounts.get(pinnedShortcut);
                     if ((count == null || --count.value == 0)
                             && !InstallShortcutReceiver.getPendingShortcuts(context)
-                                .contains(pinnedShortcut)) {
+                            .contains(pinnedShortcut)) {
                         DeepShortcutManager.getInstance(context).unpinShortcut(pinnedShortcut);
                     }
                     // Fall through.
@@ -274,6 +281,8 @@ public class BgDataModel {
                 case LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET:
                 case LauncherSettings.Favorites.ITEM_TYPE_CUSTOM_APPWIDGET:
                     appWidgets.remove(item);
+                    break;
+                default:
                     break;
             }
             itemsIdMap.remove(item.id);
@@ -327,6 +336,8 @@ public class BgDataModel {
             case LauncherSettings.Favorites.ITEM_TYPE_CUSTOM_APPWIDGET:
                 appWidgets.add((LauncherAppWidgetInfo) item);
                 break;
+            default:
+                break;
         }
     }
 
@@ -371,5 +382,23 @@ public class BgDataModel {
                 deepShortcutMap.addToList(targetComponent, shortcut.getId());
             }
         }
+    }
+
+    /**
+     * item exist in workspace
+     */
+    public boolean existInWorkspace(ComponentName componentName) {
+        for (ItemInfo info : workspaceItems) {
+            if (info.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
+                continue;
+            }
+            if (info instanceof ShortcutInfo) {
+                ComponentName cn = info.getIntent().getComponent();
+                if (cn != null && cn.getPackageName().equals(componentName.getPackageName())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

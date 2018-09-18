@@ -85,30 +85,39 @@ public class LauncherModel extends BroadcastReceiver
     static final String TAG = "Launcher.Model";
 
     private final MainThreadExecutor mUiExecutor = new MainThreadExecutor();
-    @Thunk final LauncherAppState mApp;
-    @Thunk final Object mLock = new Object();
+    @Thunk
+    final LauncherAppState mApp;
+    @Thunk
+    final Object mLock = new Object();
     @Thunk
     LoaderTask mLoaderTask;
-    @Thunk boolean mIsLoaderTaskRunning;
+    @Thunk
+    boolean mIsLoaderTaskRunning;
 
-    @Thunk static final HandlerThread sWorkerThread = new HandlerThread("launcher-loader");
+    @Thunk
+    static final HandlerThread sWorkerThread = new HandlerThread("launcher-loader");
+
     static {
         sWorkerThread.start();
     }
-    @Thunk static final Handler sWorker = new Handler(sWorkerThread.getLooper());
+
+    @Thunk
+    static final Handler sWorker = new Handler(sWorkerThread.getLooper());
 
     // Indicates whether the current model data is valid or not.
     // We start off with everything not loaded. After that, we assume that
     // our monitoring of the package manager provides all updates and we never
     // need to do a requery. This is only ever touched from the loader thread.
     private boolean mModelLoaded;
+
     public boolean isModelLoaded() {
         synchronized (mLock) {
             return mModelLoaded && mLoaderTask == null;
         }
     }
 
-    @Thunk WeakReference<Callbacks> mCallbacks;
+    @Thunk
+    WeakReference<Callbacks> mCallbacks;
 
     // < only access in worker thread >
     private final AllAppsList mBgAllAppsList;
@@ -134,29 +143,49 @@ public class LauncherModel extends BroadcastReceiver
     };
 
     public interface Callbacks extends LauncherAppWidgetHost.ProviderChangedListener {
-        public boolean setLoadOnResume();
-        public int getCurrentWorkspaceScreen();
-        public void clearPendingBinds();
-        public void startBinding();
-        public void bindItems(List<ItemInfo> shortcuts, boolean forceAnimateIcons);
-        public void bindScreens(ArrayList<Long> orderedScreenIds);
-        public void finishFirstPageBind(ViewOnDrawExecutor executor);
-        public void finishBindingItems();
-        public void bindAllApplications(ArrayList<AppInfo> apps);
-        public void bindAppsAddedOrUpdated(ArrayList<AppInfo> apps);
-        public void bindAppsAdded(ArrayList<Long> newScreens,
-                                  ArrayList<ItemInfo> addNotAnimated,
-                                  ArrayList<ItemInfo> addAnimated);
-        public void bindPromiseAppProgressUpdated(PromiseAppInfo app);
-        public void bindShortcutsChanged(ArrayList<ShortcutInfo> updated, UserHandle user);
-        public void bindWidgetsRestored(ArrayList<LauncherAppWidgetInfo> widgets);
-        public void bindRestoreItemsChange(HashSet<ItemInfo> updates);
-        public void bindWorkspaceComponentsRemoved(ItemInfoMatcher matcher);
-        public void bindAppInfosRemoved(ArrayList<AppInfo> appInfos);
-        public void bindAllWidgets(MultiHashMap<PackageItemInfo, WidgetItem> widgets);
-        public void onPageBoundSynchronously(int page);
-        public void executeOnNextDraw(ViewOnDrawExecutor executor);
-        public void bindDeepShortcutMap(MultiHashMap<ComponentKey, String> deepShortcutMap);
+        boolean setLoadOnResume();
+
+        int getCurrentWorkspaceScreen();
+
+        void clearPendingBinds();
+
+        void startBinding();
+
+        void bindItems(List<ItemInfo> shortcuts, boolean forceAnimateIcons);
+
+        void bindScreens(ArrayList<Long> orderedScreenIds);
+
+        void finishFirstPageBind(ViewOnDrawExecutor executor);
+
+        void finishBindingItems();
+
+        void bindAllApplications(ArrayList<AppInfo> apps);
+
+        void bindAppsAddedOrUpdated(ArrayList<AppInfo> apps);
+
+        void bindAppsAdded(ArrayList<Long> newScreens,
+                           ArrayList<ItemInfo> addNotAnimated,
+                           ArrayList<ItemInfo> addAnimated);
+
+        void bindPromiseAppProgressUpdated(PromiseAppInfo app);
+
+        void bindShortcutsChanged(ArrayList<ShortcutInfo> updated, UserHandle user);
+
+        void bindWidgetsRestored(ArrayList<LauncherAppWidgetInfo> widgets);
+
+        void bindRestoreItemsChange(HashSet<ItemInfo> updates);
+
+        void bindWorkspaceComponentsRemoved(ItemInfoMatcher matcher);
+
+        void bindAppInfosRemoved(ArrayList<AppInfo> appInfos);
+
+        void bindAllWidgets(MultiHashMap<PackageItemInfo, WidgetItem> widgets);
+
+        void onPageBoundSynchronously(int page);
+
+        void executeOnNextDraw(ViewOnDrawExecutor executor);
+
+        void bindDeepShortcutMap(MultiHashMap<ComponentKey, String> deepShortcutMap);
     }
 
     LauncherModel(LauncherAppState app, IconCache iconCache, AppFilter appFilter) {
@@ -164,8 +193,10 @@ public class LauncherModel extends BroadcastReceiver
         mBgAllAppsList = new AllAppsList(iconCache, appFilter);
     }
 
-    /** Runs the specified runnable immediately if called from the worker thread, otherwise it is
-     * posted on the worker thread handler. */
+    /**
+     * Runs the specified runnable immediately if called from the worker thread, otherwise it is
+     * posted on the worker thread handler.
+     */
     private static void runOnWorkerThread(Runnable r) {
         if (sWorkerThread.getThreadId() == Process.myTid()) {
             r.run();
@@ -242,15 +273,35 @@ public class LauncherModel extends BroadcastReceiver
     static void checkItemInfo(final ItemInfo item) {
         final StackTraceElement[] stackTrace = new Throwable().getStackTrace();
         final long itemId = item.id;
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                synchronized (sBgDataModel) {
-                    checkItemInfoLocked(itemId, item, stackTrace);
-                }
+        Runnable r = () -> {
+            synchronized (sBgDataModel) {
+                checkItemInfoLocked(itemId, item, stackTrace);
             }
         };
         runOnWorkerThread(r);
+    }
+
+    /**
+     * update favorites
+     */
+    public static void updateFavorites(Context context, ShortcutInfo item) {
+        final long itemId = item.id;
+        final Uri uri = LauncherSettings.Favorites.getContentUri(itemId);
+        final ContentResolver cr = context.getContentResolver();
+
+        final ContentValues values = new ContentValues();
+        values.put(LauncherSettings.Favorites.CONTAINER, item.container);
+        values.put(LauncherSettings.Favorites.CELLX, item.cellX);
+        values.put(LauncherSettings.Favorites.CELLY, item.cellY);
+        values.put(LauncherSettings.Favorites.RANK, item.rank);
+        values.put(LauncherSettings.Favorites.SPANX, item.spanX);
+        values.put(LauncherSettings.Favorites.SPANY, item.spanY);
+        values.put(LauncherSettings.Favorites.SCREEN, item.screenId);
+
+        int rows = cr.update(uri, values, null, null);
+        if (rows > 0) {
+            sBgDataModel.addItem(context, item, false);
+        }
     }
 
     /**
@@ -271,31 +322,28 @@ public class LauncherModel extends BroadcastReceiver
             }
         }
 
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
-                // Clear the table
-                ops.add(ContentProviderOperation.newDelete(uri).build());
-                int count = screensCopy.size();
-                for (int i = 0; i < count; i++) {
-                    ContentValues v = new ContentValues();
-                    long screenId = screensCopy.get(i);
-                    v.put(LauncherSettings.WorkspaceScreens._ID, screenId);
-                    v.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, i);
-                    ops.add(ContentProviderOperation.newInsert(uri).withValues(v).build());
-                }
+        Runnable r = () -> {
+            ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+            // Clear the table
+            ops.add(ContentProviderOperation.newDelete(uri).build());
+            int count = screensCopy.size();
+            for (int i = 0; i < count; i++) {
+                ContentValues v = new ContentValues();
+                long screenId = screensCopy.get(i);
+                v.put(LauncherSettings.WorkspaceScreens._ID, screenId);
+                v.put(LauncherSettings.WorkspaceScreens.SCREEN_RANK, i);
+                ops.add(ContentProviderOperation.newInsert(uri).withValues(v).build());
+            }
 
-                try {
-                    cr.applyBatch(LauncherProvider.AUTHORITY, ops);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+            try {
+                cr.applyBatch(LauncherProvider.AUTHORITY, ops);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
 
-                synchronized (sBgDataModel) {
-                    sBgDataModel.workspaceScreens.clear();
-                    sBgDataModel.workspaceScreens.addAll(screensCopy);
-                }
+            synchronized (sBgDataModel) {
+                sBgDataModel.workspaceScreens.clear();
+                sBgDataModel.workspaceScreens.addAll(screensCopy);
             }
         };
         runOnWorkerThread(r);
@@ -335,14 +383,14 @@ public class LauncherModel extends BroadcastReceiver
 
     @Override
     public void onPackagesAvailable(String[] packageNames, UserHandle user,
-            boolean replacing) {
+                                    boolean replacing) {
         enqueueModelUpdateTask(
                 new PackageUpdatedTask(PackageUpdatedTask.OP_UPDATE, user, packageNames));
     }
 
     @Override
     public void onPackagesUnavailable(String[] packageNames, UserHandle user,
-            boolean replacing) {
+                                      boolean replacing) {
         if (!replacing) {
             enqueueModelUpdateTask(new PackageUpdatedTask(
                     PackageUpdatedTask.OP_UNAVAILABLE, user, packageNames));
@@ -363,12 +411,12 @@ public class LauncherModel extends BroadcastReceiver
 
     @Override
     public void onShortcutsChanged(String packageName, List<ShortcutInfoCompat> shortcuts,
-            UserHandle user) {
+                                   UserHandle user) {
         enqueueModelUpdateTask(new ShortcutsChangedTask(packageName, shortcuts, user, true));
     }
 
     public void updatePinnedShortcuts(String packageName, List<ShortcutInfoCompat> shortcuts,
-            UserHandle user) {
+                                      UserHandle user) {
         enqueueModelUpdateTask(new ShortcutsChangedTask(packageName, shortcuts, user, false));
     }
 
@@ -452,6 +500,7 @@ public class LauncherModel extends BroadcastReceiver
 
     /**
      * Starts the loader. Tries to bind {@params synchronousBindPage} synchronously if possible.
+     *
      * @return true if the page could be bound synchronously.
      */
     public boolean startLoader(int synchronousBindPage) {
@@ -462,12 +511,7 @@ public class LauncherModel extends BroadcastReceiver
             if (mCallbacks != null && mCallbacks.get() != null) {
                 final Callbacks oldCallbacks = mCallbacks.get();
                 // Clear any pending bind-runnables from the synchronized load process.
-                mUiExecutor.execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                oldCallbacks.clearPendingBinds();
-                            }
-                        });
+                mUiExecutor.execute(oldCallbacks::clearPendingBinds);
 
                 // If there is already one running, tell it to stop.
                 stopLoader();

@@ -9,7 +9,7 @@ import com.launcher.mango.util.RxJava;
  * app provider
  *
  * @author tic
- *         created on 18-9-17
+ * created on 18-9-17
  */
 public class AppModule {
 
