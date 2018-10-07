@@ -1,3 +1,4 @@
+# Deprecated 
 # Launcher-mango
 Launcher app base on android 8.0 launcher3 source code
 
